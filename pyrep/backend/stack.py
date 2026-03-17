@@ -321,6 +321,8 @@ def write_value(stackHandle, value, typeHint=None):
         return write_dict(stackHandle, value)
     elif isinstance(value, list):
         return write_list(stackHandle, value)
+    elif isinstance(value, tuple):
+        return write_list(stackHandle, list(value))
     raise RuntimeError(f"unexpected type: {type(value)} ({typeHint=})")
 
 
