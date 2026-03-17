@@ -31,9 +31,9 @@ def call(func, args, typeHints=None):
 
     stackHandle = simCreateStack()
     stack.write(stackHandle, args)
-    s = sim_scripttype_sandboxscript
     f = ctypes.c_char_p(f"{func}@lua".encode("ascii"))
-    r = simCallScriptFunctionEx(s, f, stackHandle)
+    # CoppeliaSim 4.7+ changed simCallScriptFunctionEx: use -1 (auto) instead of script type
+    r = simCallScriptFunctionEx(-1, f, stackHandle)
     if r == -1:
         if False:
             what = f"simCallScriptFunctionEx({s}, {func!r}, {args!r})"
