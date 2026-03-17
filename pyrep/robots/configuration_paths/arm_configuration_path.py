@@ -103,7 +103,8 @@ class ArmConfigurationPath(ConfigurationPath):
     def clear_visualization(self) -> None:
         """Clears/removes a visualization of the path in the scene."""
         if self._drawing_handle is not None:
-            self._sim_api.addDrawingObjectItem(self._drawing_handle, None)
+            self._sim_api.removeDrawingObject(self._drawing_handle)
+            self._drawing_handle = None
 
     def get_executed_joint_position_action(self) -> np.ndarray:
         return self._joint_position_action
@@ -119,8 +120,8 @@ class ArmConfigurationPath(ConfigurationPath):
         target_pos_vel = [lengths[-1], 0]
         previous_q = self._path_points[0 : len(self._arm.joints)]
 
-        # TODO sim.ruckigPos
-        while True:
+        max_iterations = 200
+        for _iter in range(max_iterations):
             pos_vel_accel = [0, 0, 0]
             rMax = 0
             rml_handle = self._sim_api.ruckigPos(
@@ -164,6 +165,9 @@ class ArmConfigurationPath(ConfigurationPath):
                 vel_correction = vel_correction / rMax
             else:
                 break
+        else:
+            # Max iterations reached — use best velocity correction found
+            pass
         pos_vel_accel = [0, 0, 0]
         rml_handle = self._sim_api.ruckigPos(
             1,
